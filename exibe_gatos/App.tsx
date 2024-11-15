@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { TheCatAPI } from '@thatapicompany/thecatapi';
+import { API_KEY } from '@env';
 import { 
   FlatList,
   Image,
@@ -8,22 +10,26 @@ import {
   View 
 } from 'react-native';
 
+const catApi = new TheCatAPI (API_KEY)
+
 interface Images{
   id: string;
   url: string;
 }
 export default function App() {
   const [images, setImages] = useState<Images[]>([])
-const gen = () => {
-  const newImg: Images = {
-    id: '1',
-    url: 'https://reactnative.dev/img/tiny_logo.png'
+
+  async function gen() {
+    const search = await catApi.images.searchImages({
+      limit: 5,
+    }).then(result => setImages(imageCurrent => [
+      ...result,
+      ...imageCurrent
+    ]))
+    
+    console.log(search)
   }
-  setImages(imagesCurrent => [
-    newImg,
-    ...imagesCurrent
-  ])
-}
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>
@@ -36,11 +42,13 @@ const gen = () => {
       <FlatList
         data={images}
         renderItem={image => (
-          <Image
-            style={styles.image} 
-            source={{
-              uri: image.item.url
-            }}/>
+          <View>
+            <Image
+              style={styles.image} 
+              source={{
+                uri: image.item.url
+              }}/>
+          </View>
         )}>
       </FlatList>
       
@@ -54,6 +62,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+
+  title:{
+    marginTop: 20,
+    textAlign: 'center'
+  },
+
   pressable:{
     backgroundColor: 'blue',
     width: '80%',
@@ -61,16 +75,23 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     margin: 8
   },
+
   pressableText: {
     color: 'white',
     textAlign: 'center'
   },
-  title:{
-    marginTop: 20,
-    textAlign: 'center'
+
+  imageView:{
+    borderWidth: 1,
+    borderColor: 'lightgray',
+    borderRadius: 4,
+    marginBottom: 8
   },
+
   image: {
-    width: 60,
-    height: 60,
+    margin: 8,
+    width: 200,
+    height: 200,
   },
+
 });
