@@ -27,7 +27,9 @@ export default function App() {
       ...imageCurrent
     ]))
     
-    console.log(search)
+  }
+  const remover = (id: string) => {
+    setImages(imagesCurrent => imagesCurrent.filter(i => i.id !== id))
   }
 
   return (
@@ -35,24 +37,32 @@ export default function App() {
       <Text style={styles.text}>
       Welcome to PhotoCats!</Text> 
       <Text style={styles.text}>Click the button below to view cat images.</Text>
+
       <Pressable 
         style={styles.pressable}
         onPress={gen}>
           <Text style={styles.pressableText}>Show Cats</Text>
       </Pressable>
+
       <FlatList
         style={styles.imageList}
         data={images}
+        keyExtractor={item => item.id}
         renderItem={image => (
+          <View>
             <Image
               style={styles.image} 
               source={{
                 uri: image.item.url
               }}/>
-
+            <Pressable 
+              style={styles.pressableRemover}
+              onPress={() => remover(image.item.id)}>
+                <Text style={styles.pressableText}>Remover este gato</Text>
+            </Pressable>
+          </View>
         )}>
-      </FlatList>
-      
+      </FlatList> 
     </View>
   );
 }
@@ -77,6 +87,15 @@ const styles = StyleSheet.create({
     margin: 8
   },
 
+  pressableRemover:{
+    backgroundColor: 'red',
+    width: '95%',
+    padding: 8,
+    borderRadius: 4,
+    marginLeft: 8,
+    marginBottom: 10
+  },
+
   pressableText: {
     color: 'white',
     textAlign: 'center'
@@ -92,7 +111,7 @@ const styles = StyleSheet.create({
 
   image: {
     margin: 8,
-    width: '100%',
+    width: '95%',
     aspectRatio: 1,
   },
 
